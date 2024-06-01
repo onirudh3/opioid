@@ -2,6 +2,9 @@
 # Libraries ---------------------------------------------------------------
 
 library(dplyr)
+library(readxl)
+library(did)
+library(ggplot2)
 
 
 # NCHS Overdose Data ------------------------------------------------------
@@ -20,18 +23,37 @@ df <- df %>%
 # Rename Data.Value to Deaths
 df <- df %>% rename("Deaths" = "Data.Value")
 
-# Arrange YearMonth by State
-df <- df %>% group_by(State) %>% arrange(State, YearMonth)
-
 # Select necessary columns
-df <- subset(df, select = c(State, YearMonth, Deaths))
+df <- subset(df, select = c(State.Name, YearMonth, Deaths))
 
 # Remove rows for United States and New York City which are not states
-df <- subset(df, !(State %in% c("US", "YC")))
+df <- subset(df, !(State.Name %in% c("United States", "New York City")))
+
+# Assign ID to each state
+df <- df %>% group_by(State.Name) %>% mutate(State_ID = cur_group_id())
+
+# Arrange YearMonth by State
+df <- df %>% group_by(State.Name) %>% arrange(State.Name, YearMonth)
 
 
 # Prescription Policy Data ------------------------------------------------
 
-# Column for existing state policy
+# Merge to df
+df <- left_join(df, read_excel("Data/prescription_policies_dates.xlsx"))
 
 
+# Event study -------------------------------------------------------------
+
+out <- att_gt(yname = "Deaths",
+              gname = "MedicaidPolicyDate",
+              idname = "State_ID",
+              tname = "YearMonth",
+              data = df, alp = 0.1)
+
+# Overall average treatment effect
+summary(aggte(out, type = "group"))
+
+# Event study plot 
+ggdid(aggte(out, type = "dynamic", na.rm = T)) +
+  theme_classic(base_size = 2) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
