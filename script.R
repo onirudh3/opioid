@@ -5,6 +5,7 @@ library(dplyr)
 library(readxl)
 library(did)
 library(ggplot2)
+library(stargazer)
 
 
 # NCHS Overdose Data ------------------------------------------------------
@@ -34,24 +35,49 @@ df <- df %>%
   arrange(State_ID)
 
 
-# Prescription Policy Data ------------------------------------------------
+# Auxiliary Data ----------------------------------------------------------
 
 # Merge to df
-df <- left_join(df, read_excel("Data/prescription_policies_dates.xlsx"))
+df <- left_join(df, read_excel("Data/auxiliary_data.xlsx"))
+
+# Average physician density from years 2009, 2019
+df <- df %>% 
+  mutate(PhysicianDensity = (PhysicianDensity2009 + PhysicianDensity2019) / 2, 
+         .after = PhysicianDensity2019)
+
+# Average population from years 2010, 2020, 2022
+df <- df %>% 
+  mutate(Pop = (Pop2010 + Pop2020 + Pop2022) / 3)
+
+# Time varying presence of medicaid policy 
+df <- df %>% 
+  mutate(MedicaidPolicy = case_when(MedicaidPolicyDate == 0 ~ 0,
+                                    MedicaidPolicyDate > Year ~ 0,
+                                    T ~ 1), .after = MedicaidPolicyDate)
+
+
+# Summary Statistics ------------------------------------------------------
+
+stargazer(data.frame(df))
 
 
 # Event study -------------------------------------------------------------
 
 out <- att_gt(yname = "Deaths",
-              gname = "MedicaidPolicyDate",
+              gname = "LawDate",
               idname = "State_ID",
-              tname = "YearMonth",
-              data = df, alp = 0.1)
+              tname = "Year",
+              xformla = ~ExistingPolicy + ExistingPDMP + PhysicianDensity + Pop,
+              # control_group = "notyettreated",
+              data = df,
+              alp = 0.1)
 
 # Overall average treatment effect
-summary(aggte(out, type = "group"))
+summary(aggte(out, type = "group", na.rm = T))
 
 # Event study plot 
 ggdid(aggte(out, type = "dynamic", na.rm = T)) +
-  theme_classic(base_size = 2) +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
+  theme_classic(base_size = 12) +
+  ylim(-1500, 1500)
+
+
