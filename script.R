@@ -6,6 +6,7 @@ library(readxl)
 library(did)
 library(ggplot2)
 library(stargazer)
+library(missForest)
 
 
 # NCHS Overdose Data ------------------------------------------------------
@@ -35,7 +36,7 @@ df <- df %>%
   arrange(State_ID)
 
 
-# Auxiliary Data ----------------------------------------------------------
+# Auxiliary Data and Processing -------------------------------------------
 
 # Merge to df
 df <- left_join(df, read_excel("Data/auxiliary_data.xlsx"))
@@ -49,11 +50,39 @@ df <- df %>%
 df <- df %>% 
   mutate(Pop = (Pop2010 + Pop2020 + Pop2022) / 3)
 
-# Time varying presence of medicaid policy 
+# Presence of medicaid policy 
 df <- df %>% 
   mutate(MedicaidPolicy = case_when(MedicaidPolicyDate == 0 ~ 0,
-                                    MedicaidPolicyDate > Year ~ 0,
                                     T ~ 1), .after = MedicaidPolicyDate)
+
+# Log deaths
+df <- df %>% mutate(LogDeaths = log(Deaths), .after = Deaths)
+
+
+# Opioid Prescribing Rate Data --------------------------------------------
+
+# Read data
+dx <- read.csv("Data/medicaid_opioid_prescribing_rates.csv")
+
+# Plan_Type = "All"
+dx <- subset(dx, Plan_Type == "All")
+
+# Select columns
+dx <- subset(dx, select = c(Geo_Desc, Year, Opioid_Prscrbng_Rate))
+
+# Rename stuff
+dx <- dx %>% rename("State.Name" = "Geo_Desc", "OpioidPrescribingRate" = "Opioid_Prscrbng_Rate")
+
+# Merge to df
+df <- left_join(df, dx)
+
+# Impute missing data using random forest
+set.seed(123)
+df <- cbind(df[, 1], missForest(data.frame(df)[, 2:21])[["ximp"]])
+
+# Average across the years
+df <- df %>% group_by(State_ID) %>% mutate(OpioidPrescribingRate = mean(OpioidPrescribingRate))
+df$OpioidPrescribingRate <- round(df$OpioidPrescribingRate, 3)
 
 
 # Summary Statistics ------------------------------------------------------
@@ -63,11 +92,11 @@ stargazer(data.frame(df))
 
 # Event study -------------------------------------------------------------
 
-out <- att_gt(yname = "Deaths",
+out <- att_gt(yname = "LogDeaths",
               gname = "LawDate",
               idname = "State_ID",
               tname = "Year",
-              xformla = ~ExistingPolicy + ExistingPDMP + PhysicianDensity + Pop,
+              xformla = ~ExistingPolicy + ExistingPDMP + MedicaidPolicy + PhysicianDensity + OpioidPrescribingRate,
               # control_group = "notyettreated",
               data = df,
               alp = 0.1)
@@ -75,9 +104,20 @@ out <- att_gt(yname = "Deaths",
 # Overall average treatment effect
 summary(aggte(out, type = "group", na.rm = T))
 
-# Event study plot 
+# Event study plot
+pdf(file = "Figures/eventstudy.pdf", height = 4, width = 6)
 ggdid(aggte(out, type = "dynamic", na.rm = T)) +
   theme_classic(base_size = 12) +
-  ylim(-1500, 1500)
+  ylim(-0.7, 0.7)
+dev.off()
+
+
+
+
+
+
+
+
+
 
 
