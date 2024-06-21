@@ -1,3 +1,5 @@
+# Anirudh Ravishankar
+# June 2024
 
 # Libraries ---------------------------------------------------------------
 
@@ -87,7 +89,7 @@ df$OpioidPrescribingRate <- round(df$OpioidPrescribingRate, 3)
 
 # Summary Statistics ------------------------------------------------------
 
-stargazer(data.frame(df))
+# stargazer(data.frame(df))
 
 
 # Event study -------------------------------------------------------------
@@ -99,7 +101,7 @@ out <- att_gt(yname = "LogDeaths",
               xformla = ~ExistingPolicy + ExistingPDMP + MedicaidPolicy + PhysicianDensity + OpioidPrescribingRate,
               # control_group = "notyettreated",
               data = df,
-              alp = 0.1)
+              alp = 0.05)
 
 # Overall average treatment effect
 summary(aggte(out, type = "group", na.rm = T))
