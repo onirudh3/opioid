@@ -16,6 +16,7 @@ library(urbnmapr)
 # For maps
 # devtools::install_github("UrbanInstitute/urbnmapr")
 library(urbnmapr)
+library(sf)
 
 
 # NCHS Overdose Data ------------------------------------------------------
@@ -99,17 +100,22 @@ df$OpioidPrescribingRate <- round(df$OpioidPrescribingRate, 3)
 
 # Map ---------------------------------------------------------------------
 
-# Load and clean
-boundaries <- read_sf("Map Files/cb_2018_us_state_500k.shp")
-boundaries <- boundaries %>% rename("State.Name" = "NAME")
+# Load
+states_sf <- get_urbn_map("states", sf = T)
+states_sf <- states_sf %>% rename("State.Name" = "state_name")
 
 # Merge to auxiliary data dz to plot
-dx <- left_join(dx, subset(boundaries, select = c(State.Name, geometry)))
+dx <- left_join(dx, subset(states_sf, select = c(State.Name, geometry)))
 
 # Plot
+dx$LawDate <- as.factor(dx$LawDate)
+dx <- dx %>% mutate(LawDate = case_when(LawDate == 0 ~ "No Law", T ~ LawDate))
 dx <- st_as_sf(dx)
 ggplot(dx) +
-  geom_sf(aes(fill = LawDate))
+  geom_sf(aes(fill = LawDate)) +
+  theme_void() +
+  theme(legend.title = element_blank()) +
+  scale_fill_manual(values = c("#F9F871", "#FFC75F", "#FF9671", "#FF6F91", "#D65DB1", "white"))
 
 
 # Summary Statistics ------------------------------------------------------
