@@ -1,6 +1,7 @@
 # Anirudh Ravishankar
 # June 2024
 
+
 # Libraries ---------------------------------------------------------------
 
 library(dplyr)
@@ -107,11 +108,9 @@ out <- att_gt(yname = "LogDeaths",
 summary(aggte(out, type = "group", na.rm = T))
 
 # Event study plot
-pdf(file = "Figures/eventstudy.pdf", height = 4, width = 6)
 ggdid(aggte(out, type = "dynamic", na.rm = T)) +
   theme_classic(base_size = 12) +
   ylim(-0.7, 0.7)
-dev.off()
 
 
 
@@ -121,5 +120,8 @@ dev.off()
 
 
 
-
-
+df <- read_excel("Data/auxiliary_data.xlsx")
+df <- subset(df, LawDate != 0)
+mean(df$LawDate)
+sd(df$LawDate)
+summary(df$LawDate)
