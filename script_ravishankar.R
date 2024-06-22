@@ -10,6 +10,12 @@ library(did)
 library(ggplot2)
 library(stargazer)
 library(missForest)
+library(sf)
+library(urbnmapr)
+
+# For maps
+# devtools::install_github("UrbanInstitute/urbnmapr")
+library(urbnmapr)
 
 
 # NCHS Overdose Data ------------------------------------------------------
@@ -41,8 +47,11 @@ df <- df %>%
 
 # Auxiliary Data and Processing -------------------------------------------
 
+# Load
+dx <- read_excel("Data/auxiliary_data.xlsx")
+
 # Merge to df
-df <- left_join(df, read_excel("Data/auxiliary_data.xlsx"))
+df <- left_join(df, dx)
 
 # Average physician density from years 2009, 2019
 df <- df %>% 
@@ -65,19 +74,19 @@ df <- df %>% mutate(LogDeaths = log(Deaths), .after = Deaths)
 # Opioid Prescribing Rate Data --------------------------------------------
 
 # Read data
-dx <- read.csv("Data/medicaid_opioid_prescribing_rates.csv")
+dz <- read.csv("Data/medicaid_opioid_prescribing_rates.csv")
 
 # Plan_Type = "All"
-dx <- subset(dx, Plan_Type == "All")
+dz <- subset(dz, Plan_Type == "All")
 
 # Select columns
-dx <- subset(dx, select = c(Geo_Desc, Year, Opioid_Prscrbng_Rate))
+dz <- subset(dz, select = c(Geo_Desc, Year, Opioid_Prscrbng_Rate))
 
 # Rename stuff
-dx <- dx %>% rename("State.Name" = "Geo_Desc", "OpioidPrescribingRate" = "Opioid_Prscrbng_Rate")
+dz <- dz %>% rename("State.Name" = "Geo_Desc", "OpioidPrescribingRate" = "Opioid_Prscrbng_Rate")
 
 # Merge to df
-df <- left_join(df, dx)
+df <- left_join(df, dz)
 
 # Impute missing data using random forest
 set.seed(123)
@@ -86,6 +95,21 @@ df <- cbind(df[, 1], missForest(data.frame(df)[, 2:21])[["ximp"]])
 # Average across the years
 df <- df %>% group_by(State_ID) %>% mutate(OpioidPrescribingRate = mean(OpioidPrescribingRate))
 df$OpioidPrescribingRate <- round(df$OpioidPrescribingRate, 3)
+
+
+# Map ---------------------------------------------------------------------
+
+# Load and clean
+boundaries <- read_sf("Map Files/cb_2018_us_state_500k.shp")
+boundaries <- boundaries %>% rename("State.Name" = "NAME")
+
+# Merge to auxiliary data dz to plot
+dx <- left_join(dx, subset(boundaries, select = c(State.Name, geometry)))
+
+# Plot
+dx <- st_as_sf(dx)
+ggplot(dx) +
+  geom_sf(aes(fill = LawDate))
 
 
 # Summary Statistics ------------------------------------------------------
@@ -113,15 +137,3 @@ ggdid(aggte(out, type = "dynamic", na.rm = T)) +
   ylim(-0.7, 0.7)
 
 
-
-
-
-
-
-
-
-df <- read_excel("Data/auxiliary_data.xlsx")
-df <- subset(df, LawDate != 0)
-mean(df$LawDate)
-sd(df$LawDate)
-summary(df$LawDate)
