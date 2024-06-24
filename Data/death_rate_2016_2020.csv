@@ -1,0 +1,80 @@
+﻿All Causes of Death Rates  Table by State
+"All Races (includes Hispanic/Latino), Both Sexes, All Ages, 2016-2020"
+Sorted by Rate
+
+State, FIPS,"Age-Adjusted Death Rate(†) - deaths per 100,000","Lower 95% Confidence Interval","Upper 95% Confidence Interval",Average Annual Count,Recent Trend,"Recent 5-Year Trend (‡) in Death Rates","Lower 95% Confidence Interval","Upper 95% Confidence Interval"
+"United States",00000,748.3 ,747.9, 748.6,2926970,rising,2.9 ,1.8, 4.1
+"Mississippi",28000,985.6 ,980.8, 990.4,33893,rising,4.3 ,1.7, 7.0
+"West Virginia",54000,966.4 ,960.7, 972.1,23799,rising,2.8 ,0.6, 5.1
+"Kentucky",21000,947.2 ,943.4, 951,49922,rising,1.3 ,0.3, 2.4
+"Alabama",01000,941.7 ,938.1, 945.3,55789,rising,3.2 ,1.4, 5.0
+"Tennessee",47000,916.2 ,913.2, 919.2,73034,rising,2.9 ,1.4, 4.5
+"Oklahoma",40000,915.9 ,911.9, 919.8,41880,rising,2.7 ,0.5, 4.9
+"Arkansas",05000,908.7 ,904.3, 913.2,33534,rising,2.8 ,0.6, 4.9
+"Louisiana",22000,905.1 ,901.4, 908.8,47769,rising,4.0 ,0.4, 7.7
+"Indiana",18000,863.5 ,860.6, 866.5,67791,rising,3.2 ,1.6, 4.8
+"Ohio",39000,860.7 ,858.6, 862.9,126980,rising,1.8 ,0.7, 2.9
+"South Carolina",45000,846.1 ,842.7, 849.4,52078,rising,2.9 ,0.4, 5.6
+"Missouri",29000,837.6 ,834.7, 840.6,64231,rising,3.1 ,1.4, 4.8
+"Georgia",13000,814.7 ,812.3, 817.2,87722,rising,2.9 ,0.7, 5.1
+"Michigan",26000,808.2 ,805.9, 810.4,101785,rising,3.2 ,2.1, 4.4
+"North Carolina",37000,793.8 ,791.5, 796.1,96564,rising,2.0 ,0.9, 3.1
+"Kansas",20000,790.4 ,786.2, 794.6,28117,rising,3.1 ,1.4, 4.9
+"New Mexico",35000,788.6 ,783.6, 793.7,19871,rising,4.8 ,2.0, 7.6
+"Pennsylvania",42000,783.3 ,781.4, 785.2,138561,rising,1.3 ,0.2, 2.4
+"Nevada",32000,777.7 ,773.4, 782.1,25894,stable,2.7 ,-0.4, 5.8
+"Delaware",10000,764.1 ,757.1, 771.2,9571,rising,1.6 ,0.3, 2.9
+"Maine",23000,764 ,758.3, 769.7,14875,rising,0.5 ,0.1, 0.9
+"Montana",30000,763.1 ,756.4, 769.9,10505,stable,2.9 ,-0.4, 6.3
+"Texas",48000,761.9 ,760.4, 763.4,209191,rising,3.6 ,1.2, 5.9
+"South Dakota",46000,760.2 ,752.7, 767.7,8389,rising,4.3 ,1.7, 6.9
+"Wyoming",56000,752.4 ,743, 761.9,5133,rising,3.3 ,0.9, 5.8
+"Iowa",19000,752.3 ,748.5, 756.1,31457,rising,3.5 ,1.5, 5.6
+"District of Columbia",11001,749.3 ,740.1, 758.6,5227,rising,3.6 ,2.0, 5.3
+"Wisconsin",55000,745.4 ,742.6, 748.3,55015,rising,3.1 ,2.0, 4.1
+"Idaho",16000,744.1 ,738.6, 749.6,14494,stable,0.3 ,-0.1, 0.7
+"Illinois",17000,743.8 ,741.8, 745.8,113700,rising,3.6 ,2.2, 5.0
+"Nebraska",31000,737.7 ,732.7, 742.7,17304,stable,3.2 ,-0.3, 6.8
+"Maryland",24000,736.7 ,733.8, 739.6,52032,rising,3.1 ,2.0, 4.2
+"Alaska",02900,730.6 ,720.7, 740.6,4628,falling,-0.7 ,-1.0, -0.5
+"Virginia",51000,729.3 ,726.8, 731.7,71065,rising,2.1 ,1.0, 3.4
+"Rhode Island",44000,724.3 ,717.9, 730.8,10409,rising,3.2 ,0.9, 5.5
+"North Dakota",38000,723.6 ,715.6, 731.6,6771,rising,5.1 ,1.7, 8.7
+"New Hampshire",33000,719.1 ,713.3, 724.8,12785,rising,0.6 ,0.2, 1.0
+"Utah",49000,717 ,712.4, 721.7,18906,stable,0.4 ,-0.1, 0.9
+"Oregon",41000,713.9 ,710.6, 717.2,37236,stable,0.0 ,-0.5, 0.4
+"Vermont",50000,712.8 ,704.5, 721.1,6071,stable,0.2 ,-0.1, 0.6
+"New Jersey",34000,700.3 ,698.1, 702.6,78950,rising,5.0 ,3.8, 6.3
+"Arizona",04000,697.8 ,695.3, 700.3,61930,rising,4.1 ,1.0, 7.3
+"Massachusetts",25000,686.4 ,683.9, 688.9,60353,rising,1.1 ,0.2, 2.0
+"Washington",53000,684.5 ,682, 687.1,58009,stable,0.2 ,-0.3, 0.7
+"Colorado",08000,680.4 ,677.4, 683.4,40085,stable,3.2 ,0.0, 6.5
+"Florida",12000,675.3 ,673.9, 676.6,210604,rising,2.0 ,1.1, 3.0
+"Connecticut",09000,672 ,668.7, 675.4,32536,rising,4.0 ,2.9, 5.2
+"Minnesota",27000,669.8 ,667, 672.6,46016,rising,2.8 ,1.4, 4.3
+"New York",36000,659.1 ,657.6, 660.5,165298,rising,5.7 ,2.9, 8.5
+"California",06000,632.9 ,631.8, 634,277752,rising,2.8 ,1.1, 4.5
+"Hawaii",15000,573.9 ,569, 578.8,11461,stable,-0.1 ,-0.6, 0.4
+
+Suggested Citation:
+HDPulse: An Ecosystem of Minority Health and Health Disparities Resources. National Institute on Minority Health and Health Disparities. Created 6/23/2024. Available from https://hdpulse.nimhd.nih.gov
+
+Notes:
+
+
+Trend
+   Rising when 95% confidence interval of average annual percent change is above 0.
+   Stable when 95% confidence interval of average annual percent change includes 0.
+   Falling when 95% confidence interval of average annual percent change is below 0.
+
+
+"(†) Death rates (deaths per 100,000 population per year) are age-adjusted to the 2000 US standard population [https://www.seer.cancer.gov/stdpopulations/stdpop.19ages.html] (19 age groups: <1, 1-4, 5-9, ... , 80-84, 85+). Rates calculated using SEER*Stat. Population counts for denominators are based on Census populations as modified [https://seer.cancer.gov/popdata/] by NCI. The US Population Data File [https://seer.cancer.gov/popdata/] is used for mortality data. \n"
+State Health Departments [ https://www.cdc.gov/publichealthgateway/healthdirectories/healthdepartments.html  ] may provide more current or more local data.
+"(‡) The Average Annual Percent Change (AAPC) is based on the APCs calculated by Joinpoint Regression Program (Version 4.9.0.0). Due to data availability issues, the time period used in the calculation of the joinpoint regression model may differ for selected counties. \n"
+"For more information about All Causes of Death, see the definitions at http://hdpulse.nimhd.nih.gov/data/cod.html#all."
+
+"Please note that the data comes from different sources. Due to different years ( https://hdpulse.nimhd.nih.gov/data/historicaltrend/differences.html ) of data availability, most of the trends are AAPCs based on APCs but some are APCs calculated in SEER*Stat. ( https://seer.cancer.gov/seerstat/ ) Please refer to the source for each graph for additional information. "
+
+"Interpret Rankings provides insight into interpreting mortality statistics.  When the population size for a denominator is small, the rates may be unstable.  A rate is unstable when a small change in the numerator (e.g., only one or two additional deaths) has a dramatic effect on the calculated rate."
+"Rural-Urban Continuum Codes (developed by the United States Department of Agriculture (USDA) [ https://www.ers.usda.gov/data-products/rural-urban-continuum-codes.aspx ] ) are used on this website to distinguish which counties are rural and urban; additionally, how much of a state’s population is classified as rural or urban. For more information about using Rural-Urban Continuum Codes, go to the rural urban [ http://hdpulse.nimhd.nih.gov/data/ruralurban.html ] page."
+

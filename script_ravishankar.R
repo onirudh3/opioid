@@ -111,33 +111,27 @@ dx <- left_join(dx, subset(states_sf, select = c(State.Name, geometry)))
 dx$LawDate <- as.factor(dx$LawDate)
 dx <- dx %>% mutate(LawDate = case_when(LawDate == 0 ~ "No Law", T ~ LawDate))
 dx <- st_as_sf(dx)
-pdf(file = "Figures/law_date_map.pdf", height = 4, width = 6)
 ggplot(dx) +
   geom_sf(aes(fill = LawDate)) +
   theme_void() +
   theme(legend.title = element_blank()) +
   scale_fill_manual(values = c("#C4E2A2", "#8EC68B", "#54AA79", "#008D6C", "#007062", "white"))
-dev.off()
 
 # AnyPolicyDate
 dx$AnyPolicyDate <- as.factor(dx$AnyPolicyDate)
 dx <- dx %>% mutate(AnyPolicyDate = case_when(AnyPolicyDate == 0 ~ "No Law / Policy", T ~ AnyPolicyDate))
-pdf(file = "Figures/any_policy_date_map.pdf", height = 4, width = 6)
 ggplot(dx) +
   geom_sf(aes(fill = AnyPolicyDate)) +
   theme_void() +
   theme(legend.title = element_blank()) +
   scale_fill_manual(values = c("#F8FFBF", "#C4E2A2", "#8EC68B", "#54AA79", "#008D6C", "#007062", "white"))
-dev.off()
 
 # ExistingPDMP
-pdf(file = "Figures/existing_pdmp_map.pdf", height = 4, width = 6)
 ggplot(dx) +
   geom_sf(aes(fill = factor(ExistingPDMP))) +
   theme_void() +
   theme(legend.title = element_blank()) +
   scale_fill_manual(values = c("white", "#C4E2A2"))
-dev.off()
 
 
 # Summary Statistics ------------------------------------------------------
