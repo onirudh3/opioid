@@ -10,13 +10,15 @@ library(did)
 library(ggplot2)
 library(stargazer)
 library(missForest)
-library(sf)
-library(urbnmapr)
+library(ggpubr)
 
 # For maps
 # devtools::install_github("UrbanInstitute/urbnmapr")
 library(urbnmapr)
 library(sf)
+
+# Forbid scientific notation
+options(scipen = 999)
 
 
 # NCHS Overdose Data ------------------------------------------------------
@@ -24,20 +26,27 @@ library(sf)
 # Load data
 df <- read.csv("Data/VSRR_Provisional_Drug_Overdose_Death_Counts_20240528.csv")
 
-# We need only overdose deaths
-df <- df %>% subset(Indicator == "Number of Drug Overdose Deaths")
+# Remove rows for United States and New York City which are not states
+df <- subset(df, !(State.Name %in% c("United States", "New York City")))
 
 # 12 month ending period in December is the value for the year
 df <- df %>% subset(Month == "December")
 
-# Remove rows for United States and New York City which are not states
-df <- subset(df, !(State.Name %in% c("United States", "New York City")))
-
 # Select necessary columns
-df <- subset(df, select = c(State.Name, Year, Data.Value))
+df <- subset(df, select = c(State.Name, Year, Indicator, Data.Value))
 
-# Rename Data.Value to Deaths
-df <- df %>% rename("Deaths" = "Data.Value")
+# Create a new dataframe to re-merge because we want two columns for each indicator category
+ds <- df %>% subset(Indicator %in% c("Number of Deaths"))
+ds <- ds %>% rename("TotalDeaths" = "Data.Value")
+
+# We need overdose deaths and total deaths
+df <- df %>% subset(Indicator %in% c("Number of Drug Overdose Deaths"))
+df <- df %>% rename("OverdoseDeaths" = "Data.Value")
+df <- subset(df, select = c(State.Name, Year, OverdoseDeaths))
+df <- left_join(df, subset(ds, select = c(State.Name, Year, TotalDeaths)))
+
+# Share of overdose deaths in total mortality
+df <- df %>% mutate(PropDeaths = OverdoseDeaths / TotalDeaths, .after = Year)
 
 # Assign ID to each state
 df <- df %>% 
@@ -68,8 +77,8 @@ df <- df %>%
   mutate(MedicaidPolicy = case_when(MedicaidPolicyDate == 0 ~ 0,
                                     T ~ 1), .after = MedicaidPolicyDate)
 
-# Log deaths
-df <- df %>% mutate(LogDeaths = log(Deaths), .after = Deaths)
+# Log OverdoseDeaths
+df <- df %>% mutate(LogOverdoseDeaths = log(OverdoseDeaths), .after = OverdoseDeaths)
 
 
 # Opioid Prescribing Rate Data --------------------------------------------
@@ -91,11 +100,19 @@ df <- left_join(df, dz)
 
 # Impute missing data using random forest
 set.seed(123)
-df <- cbind(df[, 1], missForest(data.frame(df)[, 2:21])[["ximp"]])
+df$PoliticalLeaning <- as.factor(df$PoliticalLeaning)
+df <- cbind(df[, 1], missForest(data.frame(df)[, 2:28])[["ximp"]])
 
 # Average across the years
 df <- df %>% group_by(State_ID) %>% mutate(OpioidPrescribingRate = mean(OpioidPrescribingRate))
 df$OpioidPrescribingRate <- round(df$OpioidPrescribingRate, 3)
+
+
+# Distribution of outcome variables ---------------------------------------
+
+par(mfrow = c(1, 2))
+hist(df$LogOverdoseDeaths)
+hist(df$PropDeaths)
 
 
 # Map ---------------------------------------------------------------------
@@ -108,26 +125,27 @@ states_sf <- states_sf %>% rename("State.Name" = "state_name")
 dx <- left_join(dx, subset(states_sf, select = c(State.Name, geometry)))
 
 # LawDate
-dx$LawDate <- as.factor(dx$LawDate)
-dx <- dx %>% mutate(LawDate = case_when(LawDate == 0 ~ "No Law", T ~ LawDate))
+dx$LawDateforMap <- as.factor(dx$LawDateforMap)
+dx <- dx %>% mutate(LawDateforMap = case_when(LawDateforMap == 0 ~ "No Law", T ~ LawDateforMap))
 dx <- st_as_sf(dx)
 pdf(file = "Figures/law_date_map.pdf", height = 4, width = 6)
 ggplot(dx) +
-  geom_sf(aes(fill = LawDate)) +
+  geom_sf(aes(fill = LawDateforMap)) +
   theme_void() +
   theme(legend.title = element_blank()) +
-  scale_fill_manual(values = c("#C4E2A2", "#8EC68B", "#54AA79", "#008D6C", "#007062", "white"))
+  scale_fill_manual(values = c("#C4E2A2", "#8EC68B", "#54AA79", "#008D6C", "white"))
 dev.off()
 
 # AnyPolicyDate
-dx$AnyPolicyDate <- as.factor(dx$AnyPolicyDate)
-dx <- dx %>% mutate(AnyPolicyDate = case_when(AnyPolicyDate == 0 ~ "No Law / Policy", T ~ AnyPolicyDate))
+dx$AnyPolicyDateforMap <- as.factor(dx$AnyPolicyDateforMap)
+dx <- dx %>% 
+  mutate(AnyPolicyDateforMap = case_when(AnyPolicyDateforMap == 0 ~ "No Law / Policy", T ~ AnyPolicyDateforMap))
 pdf(file = "Figures/any_policy_date_map.pdf", height = 4, width = 6)
 ggplot(dx) +
-  geom_sf(aes(fill = AnyPolicyDate)) +
+  geom_sf(aes(fill = AnyPolicyDateforMap)) +
   theme_void() +
   theme(legend.title = element_blank()) +
-  scale_fill_manual(values = c("#F8FFBF", "#C4E2A2", "#8EC68B", "#54AA79", "#008D6C", "#007062", "white"))
+  scale_fill_manual(values = c("#F8FFBF", "#C4E2A2", "#8EC68B", "#54AA79", "#008D6C", "white"))
 dev.off()
 
 # ExistingPDMP
@@ -145,12 +163,15 @@ ggplot(dx) +
 
 # Event study -------------------------------------------------------------
 
-out <- att_gt(yname = "LogDeaths",
+# ~ExistingPolicy + ExistingPDMP + MedicaidPolicy + PhysicianDensity + 
+# OpioidPrescribingRate + AgeAdjDeathRate + PoliticalLeaning + AvgTemp
+
+out <- att_gt(yname = "PropDeaths",
               gname = "LawDate",
               idname = "State_ID",
               tname = "Year",
-              xformla = ~ExistingPolicy + ExistingPDMP + MedicaidPolicy + PhysicianDensity + OpioidPrescribingRate,
-              # control_group = "notyettreated",
+              xformla = ~ExistingPolicy + ExistingPDMP + MedicaidPolicy + PhysicianDensity + 
+                OpioidPrescribingRate + AgeAdjDeathRate + PoliticalLeaning + AvgTemp,
               data = df,
               alp = 0.05)
 
@@ -158,8 +179,23 @@ out <- att_gt(yname = "LogDeaths",
 summary(aggte(out, type = "group", na.rm = T))
 
 # Event study plot
-ggdid(aggte(out, type = "dynamic", na.rm = T)) +
-  theme_classic(base_size = 12) +
-  ylim(-0.7, 0.7)
+p <- ggdid(aggte(out, type = "dynamic", na.rm = T)) +
+  theme_classic(base_size = 20) +
+  ylim(-0.03, 0.03) +
+  ggtitle("(5)") +
+  theme(plot.title = element_text(hjust = 0.5))
+saveRDS(p, file = "Figures/Event Study/prop_deaths_env_covariates.RDS")
 
+
+# Panel Plot --------------------------------------------------------------
+
+figure <- ggarrange(readRDS("Figures/Event Study/prop_deaths_no_covariates.RDS"),
+                    readRDS("Figures/Event Study/prop_deaths_policy_covariates.RDS"),
+                    readRDS("Figures/Event Study/prop_deaths_health_covariates.RDS"),
+                    readRDS("Figures/Event Study/prop_deaths_dem_covariates.RDS"),
+                    readRDS("Figures/Event Study/prop_deaths_env_covariates.RDS"),
+                    common.legend = T, legend = "bottom")
+pdf(file = "Figures/Event Study/prop_deaths_panel_plot.pdf", height = 10, width = 15)
+figure
+dev.off()
 
