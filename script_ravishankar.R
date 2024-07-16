@@ -115,6 +115,20 @@ hist(df$LogOverdoseDeaths)
 hist(df$PropDeaths)
 
 
+# Plots by year -----------------------------------------------------------
+
+# Average overdose deaths per year
+df %>% 
+  group_by(Year) %>% 
+  summarise(AverageOverdoseDeaths = mean(PropDeaths)) %>% 
+  ggplot(aes(x = Year, y = AverageOverdoseDeaths)) +
+  geom_line(color = "blue") +
+  geom_point(color = "blue") +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
+  scale_x_continuous(breaks = seq(2015, 2023, 1))
+
+
 # Map ---------------------------------------------------------------------
 
 # Load
