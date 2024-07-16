@@ -117,16 +117,36 @@ hist(df$PropDeaths)
 
 # Plots by year -----------------------------------------------------------
 
-# Average overdose deaths per year
-df %>% 
+# Average overdose deaths and prop deaths per year
+dn <- subset(df, LawDate == 0)
+dn <- dn %>% 
   group_by(Year) %>% 
-  summarise(AverageOverdoseDeaths = mean(PropDeaths)) %>% 
-  ggplot(aes(x = Year, y = AverageOverdoseDeaths)) +
-  geom_line(color = "blue") +
-  geom_point(color = "blue") +
+  summarise(AverageOverdoseDeaths = mean(OverdoseDeaths),
+            AveragePropDeaths = mean(PropDeaths))
+
+scaleFactor <- max(dn$AverageOverdoseDeaths) / max(dn$AveragePropDeaths)
+pdf(file = "Figures/deaths_by_year.pdf", height = 4, width = 6)
+ggplot(dn, aes(x = Year)) +
+  geom_point(aes(y = AverageOverdoseDeaths)) +
+  geom_line(aes(y = AverageOverdoseDeaths), group = 1) +
+  geom_point(aes(y = AveragePropDeaths * scaleFactor), color = "blue") +
+  geom_line(aes(y = AveragePropDeaths * scaleFactor), group = 1, color = "blue") +
   theme_classic() +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
+  scale_fill_brewer('', palette = 'Dark2') +
+  labs(x = "") +
+  scale_y_continuous(name = "Avg. Overdose Deaths",
+                     sec.axis = sec_axis(~. / scaleFactor, name = "Avg. Prop. Deaths")) +
+  theme(plot.title = element_text(size = 65, hjust = 0.5),
+        strip.background = element_blank(),
+        strip.placement = 'outside',
+        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
+        panel.grid.major.x = element_blank(),
+        axis.line.y.right = element_line(color = "blue"),
+        axis.ticks.y.right = element_line(color = "blue"),
+        axis.text.y.right = element_text(color = "blue"),
+        axis.title.y.right = element_text(color = "blue")) +
   scale_x_continuous(breaks = seq(2015, 2023, 1))
+dev.off()
 
 
 # Map ---------------------------------------------------------------------
@@ -142,25 +162,21 @@ dx <- left_join(dx, subset(states_sf, select = c(State.Name, geometry)))
 dx$LawDateforMap <- as.factor(dx$LawDateforMap)
 dx <- dx %>% mutate(LawDateforMap = case_when(LawDateforMap == 0 ~ "No Law", T ~ LawDateforMap))
 dx <- st_as_sf(dx)
-pdf(file = "Figures/law_date_map.pdf", height = 4, width = 6)
 ggplot(dx) +
   geom_sf(aes(fill = LawDateforMap)) +
   theme_void() +
   theme(legend.title = element_blank()) +
   scale_fill_manual(values = c("#C4E2A2", "#8EC68B", "#54AA79", "#008D6C", "white"))
-dev.off()
 
 # AnyPolicyDate
 dx$AnyPolicyDateforMap <- as.factor(dx$AnyPolicyDateforMap)
 dx <- dx %>% 
   mutate(AnyPolicyDateforMap = case_when(AnyPolicyDateforMap == 0 ~ "No Law / Policy", T ~ AnyPolicyDateforMap))
-pdf(file = "Figures/any_policy_date_map.pdf", height = 4, width = 6)
 ggplot(dx) +
   geom_sf(aes(fill = AnyPolicyDateforMap)) +
   theme_void() +
   theme(legend.title = element_blank()) +
   scale_fill_manual(values = c("#F8FFBF", "#C4E2A2", "#8EC68B", "#54AA79", "#008D6C", "white"))
-dev.off()
 
 # ExistingPDMP
 ggplot(dx) +
