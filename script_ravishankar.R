@@ -101,7 +101,7 @@ df <- left_join(df, dz)
 # Impute missing data using random forest
 set.seed(123)
 df$PoliticalLeaning <- as.factor(df$PoliticalLeaning)
-df <- cbind(df[, 1], missForest(data.frame(df)[, 2:28])[["ximp"]])
+df <- cbind(df[, 1], missForest(data.frame(df)[, 2:29])[["ximp"]])
 
 # Average across the years
 df <- df %>% group_by(State_ID) %>% mutate(OpioidPrescribingRate = mean(OpioidPrescribingRate))
@@ -110,28 +110,30 @@ df$OpioidPrescribingRate <- round(df$OpioidPrescribingRate, 3)
 
 # Distribution of outcome variables ---------------------------------------
 
+pdf(file = "Figures/histogram.pdf", height = 4, width = 6)
 par(mfrow = c(1, 2))
-hist(df$LogOverdoseDeaths)
-hist(df$PropDeaths)
-
+hist(df$LogOverdoseDeaths, main = "", xlab = "Log Overdose Deaths",
+     cex.lab = 0.8, cex.axis = 0.8)
+hist(df$PropDeaths, main = "", xlab = "Prop. Deaths",
+     cex.lab = 0.8, cex.axis = 0.8)
+dev.off()
 
 # Plots by year -----------------------------------------------------------
 
 # Average overdose deaths and prop deaths per year
-dn <- subset(df, LawDate == 0)
-dn <- dn %>% 
+dn <- df %>% 
   group_by(Year) %>% 
   summarise(AverageOverdoseDeaths = mean(OverdoseDeaths),
             AveragePropDeaths = mean(PropDeaths))
 
 scaleFactor <- max(dn$AverageOverdoseDeaths) / max(dn$AveragePropDeaths)
-pdf(file = "Figures/deaths_by_year.pdf", height = 4, width = 6)
+pdf(file = "Figures/deaths_prop_by_year.pdf", height = 4, width = 6)
 ggplot(dn, aes(x = Year)) +
   geom_point(aes(y = AverageOverdoseDeaths)) +
   geom_line(aes(y = AverageOverdoseDeaths), group = 1) +
   geom_point(aes(y = AveragePropDeaths * scaleFactor), color = "blue") +
   geom_line(aes(y = AveragePropDeaths * scaleFactor), group = 1, color = "blue") +
-  theme_classic() +
+  theme_classic(base_size = 12) +
   scale_fill_brewer('', palette = 'Dark2') +
   labs(x = "") +
   scale_y_continuous(name = "Avg. Overdose Deaths",
@@ -147,6 +149,12 @@ ggplot(dn, aes(x = Year)) +
         axis.title.y.right = element_text(color = "blue")) +
   scale_x_continuous(breaks = seq(2015, 2023, 1))
 dev.off()
+
+# Average overdose deaths in control and treatment states
+dn <- df %>% 
+  group_by(Year, Law) %>% 
+  summarise(AverageOverdoseDeaths = mean(OverdoseDeaths),
+            AveragePropDeaths = mean(PropDeaths))
 
 
 # Map ---------------------------------------------------------------------
