@@ -118,6 +118,7 @@ hist(df$PropDeaths, main = "", xlab = "Prop. Deaths",
      cex.lab = 0.8, cex.axis = 0.8)
 dev.off()
 
+
 # Plots by year -----------------------------------------------------------
 
 # Average overdose deaths and prop deaths per year
@@ -127,6 +128,7 @@ dn <- df %>%
             AveragePropDeaths = mean(PropDeaths))
 
 scaleFactor <- max(dn$AverageOverdoseDeaths) / max(dn$AveragePropDeaths)
+
 pdf(file = "Figures/deaths_prop_by_year.pdf", height = 4, width = 6)
 ggplot(dn, aes(x = Year)) +
   geom_point(aes(y = AverageOverdoseDeaths)) +
@@ -138,8 +140,7 @@ ggplot(dn, aes(x = Year)) +
   labs(x = "") +
   scale_y_continuous(name = "Avg. Overdose Deaths",
                      sec.axis = sec_axis(~. / scaleFactor, name = "Avg. Prop. Deaths")) +
-  theme(plot.title = element_text(size = 65, hjust = 0.5),
-        strip.background = element_blank(),
+  theme(strip.background = element_blank(),
         strip.placement = 'outside',
         axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
         panel.grid.major.x = element_blank(),
@@ -155,6 +156,37 @@ dn <- df %>%
   group_by(Year, Law) %>% 
   summarise(AverageOverdoseDeaths = mean(OverdoseDeaths),
             AveragePropDeaths = mean(PropDeaths))
+
+# Average overdose deaths
+p <- dn %>% 
+  ggplot(aes(x = Year, y = AverageOverdoseDeaths, color = as.factor(Law))) +
+  geom_point() +
+  geom_line() +
+  theme_classic(base_size = 14) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
+  scale_x_continuous(breaks = seq(2015, 2023, 1)) +
+  labs(x = "", y = "Avg. Overdose Deaths") +
+  scale_color_discrete(name = "",
+                      breaks = c(0, 1),
+                      labels = c("Control (n = 13)", "Treatment (n = 38)"))
+
+# Average prop deaths
+q <- dn %>% 
+  ggplot(aes(x = Year, y = AveragePropDeaths, color = as.factor(Law))) +
+  geom_point() +
+  geom_line() +
+  theme_classic(base_size = 14) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
+  scale_x_continuous(breaks = seq(2015, 2023, 1)) +
+  labs(x = "", y = "Avg. Prop. Deaths") +
+  scale_color_discrete(name = "",
+                       breaks = c(0, 1),
+                       labels = c("Control (n = 13)", "Treatment (n = 38)"))
+
+figure <- ggarrange(p, q, common.legend = T, legend = "bottom")
+pdf(file = "Figures/deaths_prop_tc.pdf", height = 4.5, width = 9)
+figure
+dev.off()
 
 
 # Map ---------------------------------------------------------------------
