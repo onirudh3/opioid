@@ -2,6 +2,7 @@
 # Libraries ---------------------------------------------------------------
 
 library(dplyr)
+library(tidyr)
 
 
 # Data --------------------------------------------------------------------
@@ -77,8 +78,113 @@ df7$Year <- 2022
 # Bind rows ---------------------------------------------------------------
 
 df <- bind_rows(df, df1, df2, df3, df4, df5, df6, df7)
+df <- df %>% 
+  mutate(Ten.Year.Age.Groups.Code = case_when(Ten.Year.Age.Groups.Code == "85+" ~ "75-84", 
+                                               T ~ Ten.Year.Age.Groups.Code))
+df <- df %>% 
+  mutate(Ten.Year.Age.Groups.Code = case_when(Ten.Year.Age.Groups.Code == "75-84" ~ "75+", 
+                                              T ~ Ten.Year.Age.Groups.Code))
+df <- df %>% 
+  group_by(State, Year, Ten.Year.Age.Groups.Code) %>% 
+  mutate(Deaths = sum(Deaths)) %>% 
+  distinct()
 
 # 15-24
-write.csv(subset(df, Ten.Year.Age.Groups.Code == "15-24"), 
-          file = "Data/Deaths by Age Group/deaths_15_to_24", row.names = F)
+dx <- subset(df, Ten.Year.Age.Groups.Code == "15-24")
+dx <- subset(dx, select = -c(Ten.Year.Age.Groups.Code))
+dx <- dx %>%
+  ungroup() %>% 
+  complete(State, Year) %>% 
+  replace(is.na(.), 0) # Balance panel
+dx <- dx %>% 
+  group_by(State) %>% 
+  mutate(State_ID = cur_group_id()) %>% 
+  arrange(State_ID) # Assign ID to each state
+dx$LogDeaths <- log(dx$Deaths + 1)
+write.csv(dx, file = "Data/Deaths by Age Group/deaths_15_to_24.csv", row.names = F)
+
+# 25-34
+dx <- subset(df, Ten.Year.Age.Groups.Code == "25-34")
+dx <- subset(dx, select = -c(Ten.Year.Age.Groups.Code))
+dx <- dx %>%
+  ungroup() %>% 
+  complete(State, Year) %>% 
+  replace(is.na(.), 0) # Balance panel
+dx <- dx %>% 
+  group_by(State) %>% 
+  mutate(State_ID = cur_group_id()) %>% 
+  arrange(State_ID) # Assign ID to each state
+dx$LogDeaths <- log(dx$Deaths + 1)
+write.csv(dx, file = "Data/Deaths by Age Group/deaths_25_to_34.csv", row.names = F)
+
+# 35-44
+dx <- subset(df, Ten.Year.Age.Groups.Code == "35-44")
+dx <- subset(dx, select = -c(Ten.Year.Age.Groups.Code))
+dx <- dx %>%
+  ungroup() %>% 
+  complete(State, Year) %>% 
+  replace(is.na(.), 0) # Balance panel
+dx <- dx %>% 
+  group_by(State) %>% 
+  mutate(State_ID = cur_group_id()) %>% 
+  arrange(State_ID) # Assign ID to each state
+dx$LogDeaths <- log(dx$Deaths + 1)
+write.csv(dx, file = "Data/Deaths by Age Group/deaths_35_to_44.csv", row.names = F)
+
+# 45-54
+dx <- subset(df, Ten.Year.Age.Groups.Code == "45-54")
+dx <- subset(dx, select = -c(Ten.Year.Age.Groups.Code))
+dx <- dx %>%
+  ungroup() %>% 
+  complete(State, Year) %>% 
+  replace(is.na(.), 0) # Balance panel
+dx <- dx %>% 
+  group_by(State) %>% 
+  mutate(State_ID = cur_group_id()) %>% 
+  arrange(State_ID) # Assign ID to each state
+dx$LogDeaths <- log(dx$Deaths + 1)
+write.csv(dx, file = "Data/Deaths by Age Group/deaths_45_to_54.csv", row.names = F)
+
+# 55-64
+dx <- subset(df, Ten.Year.Age.Groups.Code == "55-64")
+dx <- subset(dx, select = -c(Ten.Year.Age.Groups.Code))
+dx <- dx %>%
+  ungroup() %>% 
+  complete(State, Year) %>% 
+  replace(is.na(.), 0) # Balance panel
+dx <- dx %>% 
+  group_by(State) %>% 
+  mutate(State_ID = cur_group_id()) %>% 
+  arrange(State_ID) # Assign ID to each state
+dx$LogDeaths <- log(dx$Deaths + 1)
+write.csv(dx, file = "Data/Deaths by Age Group/deaths_55_to_64.csv", row.names = F)
+
+# 65-74
+dx <- subset(df, Ten.Year.Age.Groups.Code == "65-74")
+dx <- subset(dx, select = -c(Ten.Year.Age.Groups.Code))
+dx <- dx %>%
+  ungroup() %>% 
+  complete(State, Year) %>% 
+  replace(is.na(.), 0) # Balance panel
+dx <- dx %>% 
+  group_by(State) %>% 
+  mutate(State_ID = cur_group_id()) %>% 
+  arrange(State_ID) # Assign ID to each state
+dx$LogDeaths <- log(dx$Deaths + 1)
+write.csv(dx, file = "Data/Deaths by Age Group/deaths_65_to_74.csv", row.names = F)
+
+# 75+
+dx <- subset(df, Ten.Year.Age.Groups.Code == "75+")
+dx <- subset(dx, select = -c(Ten.Year.Age.Groups.Code))
+dx <- dx %>%
+  ungroup() %>% 
+  complete(State, Year) %>% 
+  replace(is.na(.), 0) # Balance panel
+dx <- dx %>% 
+  group_by(State) %>% 
+  mutate(State_ID = cur_group_id()) %>% 
+  arrange(State_ID) # Assign ID to each state
+dx$LogDeaths <- log(dx$Deaths + 1)
+write.csv(dx, file = "Data/Deaths by Age Group/deaths_75_plus.csv", row.names = F)
+
 
