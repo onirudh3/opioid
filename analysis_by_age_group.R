@@ -16,7 +16,7 @@ out <- att_gt(yname = "LogDeaths",
               idname = "State_ID",
               tname = "Year",
               xformla = ~ExistingPolicy + ExistingPDMP + MedicaidPolicy + PhysicianDensity + 
-                OpioidPrescribingRate + PoliticalLeaning + LogAvgTemp,
+                OpioidPrescribingRate + PoliticalLeaning,
               data = df,
               # control_group = "notyettreated",
               alp = 0.05)

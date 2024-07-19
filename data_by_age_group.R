@@ -91,7 +91,27 @@ df <- df %>%
   group_by(State, Year, Ten.Year.Age.Groups.Code) %>% 
   mutate(Deaths = sum(Deaths)) %>% 
   distinct()
+df$Ten.Year.Age.Groups.Code <- factor(df$Ten.Year.Age.Groups.Code, 
+                                      levels = c("1-4", "5-14", "15-24", "25-34", 
+                                                 "35-44", "45-54", "55-64", "65-74", 
+                                                 "75+"))
 df <- df %>% rename("State.Name" = "State")
+
+# Plot deaths by age group per year
+dq <- df %>% 
+  group_by(Ten.Year.Age.Groups.Code, Year) %>% 
+  summarise(Deaths = mean(Deaths))
+
+pdf(file = "Figures/deaths_by_age_group.pdf", height = 4, width = 6)
+ggplot(dq, aes(Year, Deaths, color = Ten.Year.Age.Groups.Code)) +
+  geom_line() +
+  geom_point() +
+  theme_classic(base_size = 14) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
+  scale_x_continuous(breaks = seq(2015, 2023, 1)) +
+  labs(x = "", y = "Avg. Overdose Deaths") +
+  scale_color_discrete(name = "")
+dev.off()
 
 # 15-24
 dx <- subset(df, Ten.Year.Age.Groups.Code == "15-24")
