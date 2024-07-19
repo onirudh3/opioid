@@ -8,7 +8,7 @@ library(readxl)
 
 # Data --------------------------------------------------------------------
 
-# ICD-10 codes for opioid deaths -- 
+# ICD-10 codes for opioid deaths
 codes <- c("T40.0", "T40.1", "T40.2", "T40.3", "T40.4", "T40.5", "T40.6")
 
 # 2015
