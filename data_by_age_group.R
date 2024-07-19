@@ -4,6 +4,7 @@
 library(dplyr)
 library(tidyr)
 library(readxl)
+library(missForest)
 
 
 # Data --------------------------------------------------------------------
@@ -79,6 +80,7 @@ df7$Year <- 2022
 # Bind rows ---------------------------------------------------------------
 
 df <- bind_rows(df, df1, df2, df3, df4, df5, df6, df7)
+rm(df1, df2, df3, df4, df5, df6, df7, codes)
 df <- df %>% 
   mutate(Ten.Year.Age.Groups.Code = case_when(Ten.Year.Age.Groups.Code == "85+" ~ "75-84", 
                                                T ~ Ten.Year.Age.Groups.Code))
@@ -104,6 +106,23 @@ dx <- dx %>%
   arrange(State_ID) # Assign ID to each state
 dx$LogDeaths <- log(dx$Deaths + 1)
 dx <- left_join(dx, read_excel("Data/auxiliary_data.xlsx"))
+dx <- dx %>% 
+  mutate(MedicaidPolicy = case_when(MedicaidPolicyDate == 0 ~ 0,
+                                    T ~ 1), .after = MedicaidPolicyDate)
+dx <- dx %>% 
+  mutate(PhysicianDensity = (PhysicianDensity2009 + PhysicianDensity2019) / 2, 
+         .after = PhysicianDensity2019)
+dx <- dx %>% mutate(LogAvgTemp = log(AvgTemp), .after = AvgTemp)
+dz <- read.csv("Data/medicaid_opioid_prescribing_rates.csv")
+dz <- subset(dz, Plan_Type == "All")
+dz <- subset(dz, select = c(Geo_Desc, Year, Opioid_Prscrbng_Rate))
+dz <- dz %>% rename("State.Name" = "Geo_Desc", "OpioidPrescribingRate" = "Opioid_Prscrbng_Rate")
+dx <- left_join(dx, dz)
+set.seed(1)
+dx$PoliticalLeaning <- as.factor(dx$PoliticalLeaning)
+dx <- cbind(dx[, 1], missForest(data.frame(dx)[, 2:27])[["ximp"]])
+dx <- dx %>% group_by(State_ID) %>% mutate(OpioidPrescribingRate = mean(OpioidPrescribingRate))
+dx$OpioidPrescribingRate <- round(dx$OpioidPrescribingRate, 3)
 write.csv(dx, file = "Data/Deaths by Age Group/deaths_15_to_24.csv", row.names = F)
 
 # 25-34
@@ -119,6 +138,23 @@ dx <- dx %>%
   arrange(State_ID)
 dx$LogDeaths <- log(dx$Deaths + 1)
 dx <- left_join(dx, read_excel("Data/auxiliary_data.xlsx"))
+dx <- dx %>% 
+  mutate(MedicaidPolicy = case_when(MedicaidPolicyDate == 0 ~ 0,
+                                    T ~ 1), .after = MedicaidPolicyDate)
+dx <- dx %>% 
+  mutate(PhysicianDensity = (PhysicianDensity2009 + PhysicianDensity2019) / 2, 
+         .after = PhysicianDensity2019)
+dx <- dx %>% mutate(LogAvgTemp = log(AvgTemp), .after = AvgTemp)
+dz <- read.csv("Data/medicaid_opioid_prescribing_rates.csv")
+dz <- subset(dz, Plan_Type == "All")
+dz <- subset(dz, select = c(Geo_Desc, Year, Opioid_Prscrbng_Rate))
+dz <- dz %>% rename("State.Name" = "Geo_Desc", "OpioidPrescribingRate" = "Opioid_Prscrbng_Rate")
+dx <- left_join(dx, dz)
+set.seed(1)
+dx$PoliticalLeaning <- as.factor(dx$PoliticalLeaning)
+dx <- cbind(dx[, 1], missForest(data.frame(dx)[, 2:27])[["ximp"]])
+dx <- dx %>% group_by(State_ID) %>% mutate(OpioidPrescribingRate = mean(OpioidPrescribingRate))
+dx$OpioidPrescribingRate <- round(dx$OpioidPrescribingRate, 3)
 write.csv(dx, file = "Data/Deaths by Age Group/deaths_25_to_34.csv", row.names = F)
 
 # 35-44
@@ -134,6 +170,23 @@ dx <- dx %>%
   arrange(State_ID)
 dx$LogDeaths <- log(dx$Deaths + 1)
 dx <- left_join(dx, read_excel("Data/auxiliary_data.xlsx"))
+dx <- dx %>% 
+  mutate(MedicaidPolicy = case_when(MedicaidPolicyDate == 0 ~ 0,
+                                    T ~ 1), .after = MedicaidPolicyDate)
+dx <- dx %>% 
+  mutate(PhysicianDensity = (PhysicianDensity2009 + PhysicianDensity2019) / 2, 
+         .after = PhysicianDensity2019)
+dx <- dx %>% mutate(LogAvgTemp = log(AvgTemp), .after = AvgTemp)
+dz <- read.csv("Data/medicaid_opioid_prescribing_rates.csv")
+dz <- subset(dz, Plan_Type == "All")
+dz <- subset(dz, select = c(Geo_Desc, Year, Opioid_Prscrbng_Rate))
+dz <- dz %>% rename("State.Name" = "Geo_Desc", "OpioidPrescribingRate" = "Opioid_Prscrbng_Rate")
+dx <- left_join(dx, dz)
+set.seed(1)
+dx$PoliticalLeaning <- as.factor(dx$PoliticalLeaning)
+dx <- cbind(dx[, 1], missForest(data.frame(dx)[, 2:27])[["ximp"]])
+dx <- dx %>% group_by(State_ID) %>% mutate(OpioidPrescribingRate = mean(OpioidPrescribingRate))
+dx$OpioidPrescribingRate <- round(dx$OpioidPrescribingRate, 3)
 write.csv(dx, file = "Data/Deaths by Age Group/deaths_35_to_44.csv", row.names = F)
 
 # 45-54
@@ -149,6 +202,23 @@ dx <- dx %>%
   arrange(State_ID)
 dx$LogDeaths <- log(dx$Deaths + 1)
 dx <- left_join(dx, read_excel("Data/auxiliary_data.xlsx"))
+dx <- dx %>% 
+  mutate(MedicaidPolicy = case_when(MedicaidPolicyDate == 0 ~ 0,
+                                    T ~ 1), .after = MedicaidPolicyDate)
+dx <- dx %>% 
+  mutate(PhysicianDensity = (PhysicianDensity2009 + PhysicianDensity2019) / 2, 
+         .after = PhysicianDensity2019)
+dx <- dx %>% mutate(LogAvgTemp = log(AvgTemp), .after = AvgTemp)
+dz <- read.csv("Data/medicaid_opioid_prescribing_rates.csv")
+dz <- subset(dz, Plan_Type == "All")
+dz <- subset(dz, select = c(Geo_Desc, Year, Opioid_Prscrbng_Rate))
+dz <- dz %>% rename("State.Name" = "Geo_Desc", "OpioidPrescribingRate" = "Opioid_Prscrbng_Rate")
+dx <- left_join(dx, dz)
+set.seed(1)
+dx$PoliticalLeaning <- as.factor(dx$PoliticalLeaning)
+dx <- cbind(dx[, 1], missForest(data.frame(dx)[, 2:27])[["ximp"]])
+dx <- dx %>% group_by(State_ID) %>% mutate(OpioidPrescribingRate = mean(OpioidPrescribingRate))
+dx$OpioidPrescribingRate <- round(dx$OpioidPrescribingRate, 3)
 write.csv(dx, file = "Data/Deaths by Age Group/deaths_45_to_54.csv", row.names = F)
 
 # 55-64
@@ -164,6 +234,23 @@ dx <- dx %>%
   arrange(State_ID)
 dx$LogDeaths <- log(dx$Deaths + 1)
 dx <- left_join(dx, read_excel("Data/auxiliary_data.xlsx"))
+dx <- dx %>% 
+  mutate(MedicaidPolicy = case_when(MedicaidPolicyDate == 0 ~ 0,
+                                    T ~ 1), .after = MedicaidPolicyDate)
+dx <- dx %>% 
+  mutate(PhysicianDensity = (PhysicianDensity2009 + PhysicianDensity2019) / 2, 
+         .after = PhysicianDensity2019)
+dx <- dx %>% mutate(LogAvgTemp = log(AvgTemp), .after = AvgTemp)
+dz <- read.csv("Data/medicaid_opioid_prescribing_rates.csv")
+dz <- subset(dz, Plan_Type == "All")
+dz <- subset(dz, select = c(Geo_Desc, Year, Opioid_Prscrbng_Rate))
+dz <- dz %>% rename("State.Name" = "Geo_Desc", "OpioidPrescribingRate" = "Opioid_Prscrbng_Rate")
+dx <- left_join(dx, dz)
+set.seed(1)
+dx$PoliticalLeaning <- as.factor(dx$PoliticalLeaning)
+dx <- cbind(dx[, 1], missForest(data.frame(dx)[, 2:27])[["ximp"]])
+dx <- dx %>% group_by(State_ID) %>% mutate(OpioidPrescribingRate = mean(OpioidPrescribingRate))
+dx$OpioidPrescribingRate <- round(dx$OpioidPrescribingRate, 3)
 write.csv(dx, file = "Data/Deaths by Age Group/deaths_55_to_64.csv", row.names = F)
 
 # 65-74
@@ -179,6 +266,23 @@ dx <- dx %>%
   arrange(State_ID)
 dx$LogDeaths <- log(dx$Deaths + 1)
 dx <- left_join(dx, read_excel("Data/auxiliary_data.xlsx"))
+dx <- dx %>% 
+  mutate(MedicaidPolicy = case_when(MedicaidPolicyDate == 0 ~ 0,
+                                    T ~ 1), .after = MedicaidPolicyDate)
+dx <- dx %>% 
+  mutate(PhysicianDensity = (PhysicianDensity2009 + PhysicianDensity2019) / 2, 
+         .after = PhysicianDensity2019)
+dx <- dx %>% mutate(LogAvgTemp = log(AvgTemp), .after = AvgTemp)
+dz <- read.csv("Data/medicaid_opioid_prescribing_rates.csv")
+dz <- subset(dz, Plan_Type == "All")
+dz <- subset(dz, select = c(Geo_Desc, Year, Opioid_Prscrbng_Rate))
+dz <- dz %>% rename("State.Name" = "Geo_Desc", "OpioidPrescribingRate" = "Opioid_Prscrbng_Rate")
+dx <- left_join(dx, dz)
+set.seed(1)
+dx$PoliticalLeaning <- as.factor(dx$PoliticalLeaning)
+dx <- cbind(dx[, 1], missForest(data.frame(dx)[, 2:27])[["ximp"]])
+dx <- dx %>% group_by(State_ID) %>% mutate(OpioidPrescribingRate = mean(OpioidPrescribingRate))
+dx$OpioidPrescribingRate <- round(dx$OpioidPrescribingRate, 3)
 write.csv(dx, file = "Data/Deaths by Age Group/deaths_65_to_74.csv", row.names = F)
 
 # 75+
@@ -194,6 +298,23 @@ dx <- dx %>%
   arrange(State_ID)
 dx$LogDeaths <- log(dx$Deaths + 1)
 dx <- left_join(dx, read_excel("Data/auxiliary_data.xlsx"))
+dx <- dx %>% 
+  mutate(MedicaidPolicy = case_when(MedicaidPolicyDate == 0 ~ 0,
+                                    T ~ 1), .after = MedicaidPolicyDate)
+dx <- dx %>% 
+  mutate(PhysicianDensity = (PhysicianDensity2009 + PhysicianDensity2019) / 2, 
+         .after = PhysicianDensity2019)
+dx <- dx %>% mutate(LogAvgTemp = log(AvgTemp), .after = AvgTemp)
+dz <- read.csv("Data/medicaid_opioid_prescribing_rates.csv")
+dz <- subset(dz, Plan_Type == "All")
+dz <- subset(dz, select = c(Geo_Desc, Year, Opioid_Prscrbng_Rate))
+dz <- dz %>% rename("State.Name" = "Geo_Desc", "OpioidPrescribingRate" = "Opioid_Prscrbng_Rate")
+dx <- left_join(dx, dz)
+set.seed(1)
+dx$PoliticalLeaning <- as.factor(dx$PoliticalLeaning)
+dx <- cbind(dx[, 1], missForest(data.frame(dx)[, 2:27])[["ximp"]])
+dx <- dx %>% group_by(State_ID) %>% mutate(OpioidPrescribingRate = mean(OpioidPrescribingRate))
+dx$OpioidPrescribingRate <- round(dx$OpioidPrescribingRate, 3)
 write.csv(dx, file = "Data/Deaths by Age Group/deaths_75_plus.csv", row.names = F)
 
 

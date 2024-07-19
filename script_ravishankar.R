@@ -237,7 +237,7 @@ ggplot(dx) +
 # Event study -------------------------------------------------------------
 
 # ~ExistingPolicy + ExistingPDMP + MedicaidPolicy + PhysicianDensity + 
-# OpioidPrescribingRate + AgeAdjDeathRate + PoliticalLeaning + AvgTemp
+# OpioidPrescribingRate + AgeAdjDeathRate + PoliticalLeaning + LogAvgTemp
 
 out <- att_gt(yname = "LogOverdoseDeaths",
               gname = "LawDate",
