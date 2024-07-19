@@ -2,6 +2,7 @@
 # Libraries ---------------------------------------------------------------
 
 library(did)
+library(ggplot2)
 
 
 # 15-24 -------------------------------------------------------------------
@@ -15,16 +16,9 @@ out <- att_gt(yname = "LogDeaths",
               idname = "State_ID",
               tname = "Year",
               xformla = ~ExistingPolicy + ExistingPDMP + MedicaidPolicy + PhysicianDensity + 
-                OpioidPrescribingRate + AgeAdjDeathRate + PoliticalLeaning + AvgTemp,
+                OpioidPrescribingRate + PoliticalLeaning + LogAvgTemp,
               data = df,
-              alp = 0.05)
-
-out <- att_gt(yname = "LogDeaths",
-              gname = "LawDate",
-              idname = "State_ID",
-              tname = "Year",
-              xformla = ~1,
-              data = df,
+              # control_group = "notyettreated",
               alp = 0.05)
 
 # Overall average treatment effect
@@ -32,8 +26,6 @@ summary(aggte(out, type = "group", na.rm = T))
 
 # Event study plot
 ggdid(aggte(out, type = "dynamic", na.rm = T))
-
-
 
 
 
