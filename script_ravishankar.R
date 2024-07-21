@@ -127,7 +127,7 @@ dev.off()
 # Average overdose deaths and prop deaths per year
 dn <- df %>% 
   group_by(Year) %>% 
-  summarise(AverageOverdoseDeaths = mean(OverdoseDeaths),
+  summarise(AverageOverdoseDeaths = log(mean(OverdoseDeaths)),
             AveragePropDeaths = mean(PropDeaths))
 
 scaleFactor <- max(dn$AverageOverdoseDeaths) / max(dn$AveragePropDeaths)
@@ -157,7 +157,7 @@ dev.off()
 # Average overdose deaths in control and treatment states
 dn <- df %>% 
   group_by(Year, Law) %>% 
-  summarise(AverageOverdoseDeaths = mean(OverdoseDeaths),
+  summarise(AverageOverdoseDeaths = log(mean(OverdoseDeaths)),
             AveragePropDeaths = mean(PropDeaths))
 
 # Average overdose deaths
