@@ -17,10 +17,11 @@ out <- att_gt(yname = "LogDeaths",
               idname = "State_ID",
               tname = "Year",
               data = df,
+              xformla = ~1,
               control_group = "notyettreated",
               alp = 0.05)
 summary(aggte(out, type = "group", na.rm = T))
-p <- ggdid(aggte(out, type = "dynamic", na.rm = T)) +
+ggdid(aggte(out, type = "dynamic", na.rm = T)) +
   theme_classic(base_size = 20) +
   ylim(-4.3, 4.3) +
   ggtitle("15-24") +
@@ -35,6 +36,8 @@ out <- att_gt(yname = "LogDeaths",
               idname = "State_ID",
               tname = "Year",
               data = df,
+              xformla = ~ExistingPolicy + ExistingPDMP + MedicaidPolicy + PhysicianDensity +
+                OpioidPrescribingRate + PoliticalLeaning + LogAvgTemp,
               control_group = "notyettreated",
               alp = 0.05)
 summary(aggte(out, type = "group", na.rm = T))
@@ -53,6 +56,8 @@ out <- att_gt(yname = "LogDeaths",
               idname = "State_ID",
               tname = "Year",
               data = df,
+              xformla = ~ExistingPolicy + ExistingPDMP + MedicaidPolicy + PhysicianDensity +
+                OpioidPrescribingRate + PoliticalLeaning + LogAvgTemp,
               control_group = "notyettreated",
               alp = 0.05)
 summary(aggte(out, type = "group", na.rm = T))
@@ -75,6 +80,8 @@ out <- att_gt(yname = "LogDeaths",
               idname = "State_ID",
               tname = "Year",
               data = df,
+              xformla = ~ExistingPolicy + ExistingPDMP + MedicaidPolicy + PhysicianDensity +
+                OpioidPrescribingRate + PoliticalLeaning + LogAvgTemp,
               control_group = "notyettreated",
               alp = 0.05)
 summary(aggte(out, type = "group", na.rm = T))
@@ -93,6 +100,8 @@ out <- att_gt(yname = "LogDeaths",
               idname = "State_ID",
               tname = "Year",
               data = df,
+              xformla = ~ExistingPolicy + ExistingPDMP + MedicaidPolicy + PhysicianDensity +
+                OpioidPrescribingRate + PoliticalLeaning + LogAvgTemp,
               control_group = "notyettreated",
               alp = 0.05)
 summary(aggte(out, type = "group", na.rm = T))
@@ -111,6 +120,8 @@ out <- att_gt(yname = "LogDeaths",
               idname = "State_ID",
               tname = "Year",
               data = df,
+              xformla = ~ExistingPolicy + ExistingPDMP + MedicaidPolicy + PhysicianDensity +
+                OpioidPrescribingRate + PoliticalLeaning + LogAvgTemp,
               control_group = "notyettreated",
               alp = 0.05)
 summary(aggte(out, type = "group", na.rm = T))

@@ -97,6 +97,18 @@ df$Ten.Year.Age.Groups.Code <- factor(df$Ten.Year.Age.Groups.Code,
                                                  "75+"))
 df <- df %>% rename("State.Name" = "State")
 
+# Tryna check if this data lines up with the other aggregated data
+df <- df %>% 
+  group_by(State.Name, Year) %>% 
+  summarise(Deaths = sum(Deaths))
+df <- df %>%
+  ungroup() %>% 
+  complete(State.Name, Year) %>% 
+  replace(is.na(.), 0)
+
+new <- df
+
+
 # Plot deaths by age group per year
 dq <- df %>% 
   group_by(Ten.Year.Age.Groups.Code, Year) %>% 
