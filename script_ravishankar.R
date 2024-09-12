@@ -104,7 +104,7 @@ df <- left_join(df, dz)
 # Impute missing data using random forest
 set.seed(123)
 df$PoliticalLeaning <- as.factor(df$PoliticalLeaning)
-df <- cbind(df[, 1], missForest(data.frame(df)[, 2:30])[["ximp"]])
+df <- cbind(df[, 1], missForest(data.frame(df)[, 2:32])[["ximp"]])
 
 # Average across the years
 df <- df %>% group_by(State_ID) %>% mutate(OpioidPrescribingRate = mean(OpioidPrescribingRate))
@@ -243,8 +243,7 @@ out <- att_gt(yname = "LogOverdoseDeaths",
               gname = "LawDate",
               idname = "State_ID",
               tname = "Year",
-              xformla = ~ExistingPolicy + ExistingPDMP + MedicaidPolicy + PhysicianDensity + 
-                OpioidPrescribingRate + AgeAdjDeathRate + PoliticalLeaning + LogAvgTemp,
+              xformla = ~1,
               data = df,
               alp = 0.05)
 
